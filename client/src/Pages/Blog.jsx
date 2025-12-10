@@ -7,6 +7,7 @@ import Footer from '../components/Footer'
 import Loader from '../components/Loader'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
+import FeatureMenu from '../components/FeatureMenu'
 // Import Icons for richer UI
 import { Volume2, StopCircle, Share2, Sparkles, Copy, Check } from 'lucide-react'
 
@@ -135,9 +136,12 @@ const Blog = () => {
   }, [id])
 
   return data ? (
-    <div className='relative min-h-screen bg-gray-50'>
+    <div className='relative min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300'>
       <img src={assets.gradientBackground} alt=" " className='absolute top-0 w-full h-96 object-cover -z-10 opacity-30' />
       <Navbar />
+      
+      {/* Feature Menu (Floating) */}
+      <FeatureMenu blogTitle={data.title} blogContent={data.description} />
       
       {/* Blog Header */}
       <div className='text-center mt-20 px-4'>
@@ -216,8 +220,10 @@ const Blog = () => {
         </div>
 
         {/* Engagement Section */}
-        <div className='border-t border-gray-200 mt-16 pt-10'>
-          <h3 className='text-2xl font-bold text-gray-900 mb-6'>Discussion ({comments?.length || 0})</h3>
+        <div className='border-t border-gray-200 dark:border-gray-700 mt-16 pt-10'>
+          <h3 className='text-2xl font-bold text-gray-900 dark:text-white mb-6'>
+            Discussion ({comments?.filter(c => c.isApproved)?.length || 0})
+          </h3>
           
           {/* Add Comment Form */}
           <div className='bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-10'>
@@ -251,20 +257,20 @@ const Blog = () => {
 
           {/* Comment List */}
           <div className='space-y-6'>
-            {Array.isArray(comments) && comments.map((item) => (
-              <div key={item._id} className='flex gap-4 bg-white p-5 rounded-xl border border-gray-100 shadow-sm'>
+            {Array.isArray(comments) && comments.filter(c => c.isApproved).map((item) => (
+              <div key={item._id} className='flex gap-4 bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm'>
                 <img src={assets.user_icon} alt='' className='w-10 h-10 opacity-70' />
                 <div className='flex-1'>
                   <div className='flex justify-between items-start mb-2'>
-                    <h4 className='font-bold text-gray-900'>{item.name}</h4>
-                    <span className='text-xs text-gray-400'>{Moment(item.createdAt).fromNow()}</span>
+                    <h4 className='font-bold text-gray-900 dark:text-white'>{item.name}</h4>
+                    <span className='text-xs text-gray-400 dark:text-gray-500'>{Moment(item.createdAt).fromNow()}</span>
                   </div>
-                  <p className='text-gray-600 leading-relaxed'>{item.content}</p>
+                  <p className='text-gray-600 dark:text-gray-300 leading-relaxed'>{item.content}</p>
                 </div>
               </div>
             ))}
-            {Array.isArray (comments) && comments.length === 0 && (
-               <p className='text-center text-gray-400 py-10'>No comments yet. Be the first to share your thoughts!</p>
+            {Array.isArray(comments) && comments.filter(c => c.isApproved).length === 0 && (
+               <p className='text-center text-gray-400 dark:text-gray-500 py-10'>No comments yet. Be the first to share your thoughts!</p>
             )}
           </div>
         </div>

@@ -16,6 +16,7 @@ export const AppProvider=({children})=>{
     const [token,setToken]=useState(null)
     const[blogs,setBlogs]=useState([])
     const[input,setInput]=useState("")
+    const [theme, setTheme] = useState('light') // Theme state
 
     const fetchBlog=async()=>{
         try{
@@ -29,6 +30,15 @@ export const AppProvider=({children})=>{
             toast.error(error.message)
         }
     }
+
+    // Theme Toggle Function
+    const toggleTheme = () => {
+        setTheme(prev => {
+            const newTheme = prev === 'light' ? 'dark' : 'light'
+            localStorage.setItem('theme', newTheme)
+            return newTheme
+        })
+    }
     useEffect(()=>{
         const storedtoken=localStorage.getItem('token')
         if(storedtoken && storedtoken !== 'undefined'){
@@ -40,10 +50,27 @@ export const AppProvider=({children})=>{
             // console.log("Token:", storedtoken);
 
         }
-          fetchBlog();
+        // Load theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light'
+        setTheme(savedTheme)
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+        fetchBlog();
     },[])
+
+    // Update document class when theme changes
+    useEffect(() => {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    }, [theme])
      const value={
-        axios,token,setToken,blogs,setBlogs,input,setInput
+        axios,token,setToken,blogs,setBlogs,input,setInput,theme,toggleTheme
      }
 
     return(

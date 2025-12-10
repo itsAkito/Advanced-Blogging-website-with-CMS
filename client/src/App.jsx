@@ -5,7 +5,6 @@ import Blog from './Pages/Blog'
 import Layout from './Pages/admin/Layout'
 import AddBlog from './Pages/admin/AddBlog'
 import DashBoard from './Pages/admin/DashBoard'
-// import Layout from './Pages/admin/Layout'
 import ListBlog from './Pages/admin/ListBlog'
 import Comment from './Pages/admin/Comment'
 import Login from './Pages/admin/Login'
@@ -14,31 +13,39 @@ import { Toaster } from 'react-hot-toast'
 import { useAppContext } from './context/AppContext'
 import ImageGenerator from './Pages/admin/imageGenerate'
 
-// import { useNavigate } from 'react-router-dom'
+// Protected Route Component
+const ProtectedRoute = ({ isAuthenticated, children }) => {
+  return isAuthenticated ? children : <Login />
+}
+
 const App = () => {
-
   const { token } = useAppContext();
-
 
   return (
     <div>
       <Toaster />
       <Routes>
+        {/* Public Routes */}
         <Route path='/' element={<Home />} />
         <Route path='/blog/:id' element={<Blog />} />
-        <Route path='/admin/login' element={<Login />} />
-        {/* <Route path='/admin' element={true ? <Layout /> : <Login />}>
+        
+        {/* Admin Login Route */}
+        <Route path='/admin/login' element={token ? <Layout /> : <Login />} />
+        
+        {/* Protected Admin Routes */}
+        <Route 
+          path='/admin' 
+          element={
+            <ProtectedRoute isAuthenticated={token}>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<DashBoard />} />
-          <Route path='/addblog' element={<AddBlog />} />
-          <Route path='/listblog' element={<ListBlog />} />
-          <Route path='/comment' element={<Comment />} />
-        </Route> */}
-        <Route path='/admin' element={token ? <Layout /> : <Login />}>
-          <Route index element={<DashBoard />} />
-          <Route path='addblog' element={<AddBlog />} /> 
-          <Route path="image-gen" element={<ImageGenerator/>} />     // ✅ Correct
+          <Route path='addblog' element={<AddBlog />} />
           <Route path='listblog' element={<ListBlog />} />
           <Route path='comment' element={<Comment />} />
+          <Route path='image-gen' element={<ImageGenerator/>} />
         </Route>
       </Routes>
     </div>
